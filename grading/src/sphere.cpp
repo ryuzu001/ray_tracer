@@ -5,7 +5,7 @@
 // Determine if the ray intersects with the sphere
 bool Sphere::Intersection(const Ray& ray, std::vector<Hit>& hits) const
 {
-	vec3 u = ray.direction;
+	vec3 u =  ray.direction;
 	u = u.normalized();
 	
 	vec3 v = ray.endpoint - this->center;	// v = (e-c)
@@ -41,6 +41,7 @@ bool Sphere::Intersection(const Ray& ray, std::vector<Hit>& hits) const
 		hit2.t = t2;
 		hits.push_back(hit2);
 		return true; 
+		
 	}		
    return false;
 }
