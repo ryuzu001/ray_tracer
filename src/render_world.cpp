@@ -25,27 +25,24 @@ Render_World::~Render_World()
 // Any intersection with t<=small_t should be ignored.
 Object* Render_World::Closest_Intersection(const Ray& ray,Hit& hit)
 {
-    // TODO
     Object* closest_object = NULL;
     
-    int min_t = std::numeric_limits<int>::max();
+    // int min_t = std::numeric_limits<int>::max();
+    float min_t = 9999;
+    
     
     for(unsigned i = 0; i < this->objects.size(); ++i){
         std::vector<Hit> hits;
-        if(this->objects.at(i)->Intersection(ray, hits)){
-	        for(unsigned j = 0; j < hits.size(); ++j){
-    	        if(hits.at(j).t <= min_t){
-        	        closest_object = const_cast<Object*>(hits.at(j).object);
-            	    hit = hits.at(j);
-                	min_t = hits.at(j).t;
-            	}
-        	}
+        this->objects.at(i)->Intersection(ray, hits);
+        for(unsigned j = 0; j < hits.size(); ++j){
+    	    if(hits.at(j).t <= min_t){
+    	        closest_object = const_cast<Object*>(hits.at(j).object);
+    	        hit = hits.at(j);
+    	        min_t = hits.at(j).t;
+    	    }
         }
     }
-    
     return closest_object;
-    
-
 }
 
 // set up the initial view ray and call
