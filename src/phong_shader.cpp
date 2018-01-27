@@ -3,7 +3,7 @@
 #include "ray.h"
 #include "render_world.h"
 
-#include<iostream>
+// #include<iostream>
 
 vec3 Phong_Shader::
 Shade_Surface(const Ray& ray,const vec3& intersection_point,
@@ -71,8 +71,11 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
 		vec3 C = intersection_point - ray.endpoint;
 		C = C.normalized();
 		
+		/* The specular intensity is max(dot(R,C),0)^α, where α is 
+		given to you as the specular_power variable. */
+		
 		float dotrc;
-		if(dot(R,C) < 0){
+		if(dot(R,C) < 0){		// max(0, rdotc)
 			dotrc = 0;
 		}
 		else{ dotrc = dot(C,R); }
@@ -86,28 +89,41 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
 		
 		
 		if(world.enable_shadows){
-			Ray temp;
-			temp.endpoint = intersection_point;
-			temp.direction = (this->world.lights[i]->position - intersection_point).normalized();
+			
+			// define shadow ray
+			
+			Ray shadow_ray;
+			shadow_ray.endpoint = intersection_point;
+			shadow_ray.direction = this->world.lights[i]->position - intersection_point;
+			float shadow_mag = shadow_ray.direction.magnitude();
+			
+			// NORMALIZE THE DIRECTION  (!!!)
+			
+			shadow_ray.direction = shadow_ray.direction.normalized();
+			
+			// Cast shadow ray
 			
 			Hit hit;
-			hit.t = 0;
+			Object* obj = world.Closest_Intersection(shadow_ray,hit);
 			
-			Object* obj = world.Closest_Intersection(temp, hit);
+			// find if collision (shadow ray)
 			
-			vec3 NewPt = temp.direction * hit.t;
-			
-			if(obj != 0 && temp.direction.magnitude() < NewPt.magnitude()){
+			vec3 collision;
+			collision = shadow_ray.direction * hit.t;
+			// collision = shadow_ray.endpoint + shadow_ray.direction * hit.t;
+			// collision = collision - shadow_ray.endpoint;
 
+			if(obj != 0 && shadow_mag > collision.magnitude()) {
+				// return only ambient
 			}
 			else{
+				// return all
 				colorD = colorD + Rd * L * dotln;
 				colorS = colorS + Rs * L * specular_intensity;
 			}
 		
 	    }
-	    else
-	    {
+	    else{
 			colorD = colorD + Rd * L * dotln;
 			colorS = colorS + Rs * L * specular_intensity;
 		}

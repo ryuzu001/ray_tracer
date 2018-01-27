@@ -35,7 +35,7 @@ Object* Render_World::Closest_Intersection(const Ray& ray,Hit& hit)
         std::vector<Hit> hits;
         this->objects.at(i)->Intersection(ray, hits);
         for(unsigned j = 0; j < hits.size(); ++j){
-    	    if(hits.at(j).t <= min_t){
+    	    if(hits.at(j).t < min_t && hits.at(j).t > small_t){
     	        closest_object = const_cast<Object*>(hits.at(j).object);
     	        hit = hits.at(j);
     	        min_t = hits.at(j).t;
@@ -77,8 +77,8 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
     Object* obj = this->Closest_Intersection(ray,hit);
     if(obj != 0){
         // intersection
-        vec3 intersection_point = ray.endpoint + ray.direction * hit.t;
-        // vec3 intersection_point = ray.Point(hit.t);
+        // vec3 intersection_point = ray.endpoint + ray.direction * hit.t;
+        vec3 intersection_point = ray.Point(hit.t);
 		vec3 normal = hit.object->Normal(intersection_point);
 		if(hit.ray_exiting){
 		    normal = -normal;
