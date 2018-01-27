@@ -15,7 +15,7 @@ Two different version of the program is available:
     ./ray_tracer -i <test_filename>  #OR
     ./ray_tracer_preview -i <test_filename>
   e.g.
-    ./ray_tracer_preview -i ./tests/00.txt
+    ./ray_tracer -i ./tests/00.txt
 
 III. GRADING
 
