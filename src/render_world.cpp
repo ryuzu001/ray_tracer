@@ -5,6 +5,7 @@
 #include "light.h"
 #include "ray.h"
 
+#include<iostream>
 
 Render_World::Render_World()
     :background_shader(0),ambient_intensity(0),enable_shadows(true),
@@ -75,21 +76,24 @@ vec3 Render_World::Cast_Ray(const Ray& ray,int recursion_depth)
     Hit hit;
     vec3 color;
     Object* obj = this->Closest_Intersection(ray,hit);
-    if(obj != NULL){
+    if(obj != 0 && recursion_depth <= recursion_depth_limit){
         // intersection
         // vec3 intersection_point = ray.endpoint + ray.direction * hit.t;
+        
+        // std::cout<<recursion_depth << " " <<recursion_depth_limit<<"\n";
+        
         vec3 intersection_point = ray.Point(hit.t);
 		vec3 normal = hit.object->Normal(intersection_point);
 // 		if(hit.ray_exiting){
 // 		    normal = -normal;
 // 		}
-		color = obj->material_shader->Shade_Surface(ray, intersection_point, normal, recursion_depth + 1, false);
+		color = obj->material_shader->Shade_Surface(ray, intersection_point, normal, recursion_depth + 1, hit.ray_exiting);
     }
     else{
         // no intersection
-        color = this->background_shader->Shade_Surface(ray,ray.endpoint,ray.endpoint,recursion_depth + 1, false);
-        // vec3 dummy;
-        // color = background_shader->Shade_Surface(ray, dummy, dummy, recursion_depth, false);
+        // color = this->background_shader->Shade_Surface(ray,ray.endpoint,ray.endpoint,recursion_depth, false);
+        vec3 dummy;
+        color = background_shader->Shade_Surface(ray, dummy, dummy, recursion_depth + 1, hit.ray_exiting);
     }
     
     return color;

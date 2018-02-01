@@ -107,9 +107,14 @@ for line in gs.readlines():
         if not run_command_with_timeout(grade_cmd, timeout):
             hashed_tests[file]=("TIMEOUT",None)
         else:
-            results_file=open(dir+'/'+token+'.txt')
-            d=diff_parse.match(results_file.readline())
-            results_file.close()
+            d=False
+            try:
+              results_file=open(dir+'/'+token+'.txt')
+              d=diff_parse.match(results_file.readline())
+              results_file.close()
+              os.remove(dir+'/'+token+'.txt')
+            except IOError:
+              print 'Test failed'
             if d: d=float(d.groups()[0])
             hashed_tests[file]=d
 
@@ -134,4 +139,3 @@ for line in gs.readlines():
         print("no points")
 
 print("FINAL SCORE: %g"%total_score)
-

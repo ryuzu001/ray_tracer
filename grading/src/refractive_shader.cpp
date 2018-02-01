@@ -2,6 +2,8 @@
 #include "ray.h"
 #include "render_world.h"
 
+#include<iostream>
+
 vec3 Refractive_Shader::
 Shade_Surface(const Ray& ray, const vec3& intersection_point,
         const vec3& same_side_normal, int recursion_depth,bool is_exiting) const
@@ -29,6 +31,9 @@ Shade_Surface(const Ray& ray, const vec3& intersection_point,
         //TODO:(Test 26+): Compute reflection_color:
         // - Cast Reflection Ray andd get color
         //
+        vec3 endpoint_Reflection = ray.direction - same_side_normal * 2 * dot(ray.direction, same_side_normal);
+        Ray Reflection_Ray(endpoint_Reflection, ray.direction);
+        reflection_color = world.Cast_Ray(Reflection_Ray, recursion_depth);
     }
 
     Enforce_Refractance_Ratio(reflectance_ratio);
@@ -36,6 +41,7 @@ Shade_Surface(const Ray& ray, const vec3& intersection_point,
     // TODO: (Test 26+) Compute final 'color' by blending reflection_color and refraction_color using 
     //                  reflectance_ratio
     //
+    color = reflectance_ratio * reflection_color + (1 - reflectance_ratio) * refraction_color;
     return color;
 }
 
