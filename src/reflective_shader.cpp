@@ -15,7 +15,7 @@ Shade_Surface(const Ray& ray,const vec3& intersection_point,
     // vec3 d = -ray.direction;
     // vec3 n = same_side_normal;
     // vec3 endpoint = d - n * (2 * dot(d,n));
-    // Ray reflected_ray(d, endpoint);
+    // Ray reflected_ray(endpoint, d);
     
     Ray reflected_ray;
     reflected_ray.endpoint = intersection_point;

@@ -31,9 +31,12 @@ Shade_Surface(const Ray& ray, const vec3& intersection_point,
         //TODO:(Test 26+): Compute reflection_color:
         // - Cast Reflection Ray andd get color
         //
-        vec3 endpoint_Reflection = ray.direction - same_side_normal * 2 * dot(ray.direction, same_side_normal);
-        Ray Reflection_Ray(endpoint_Reflection, ray.direction);
-        reflection_color = world.Cast_Ray(Reflection_Ray, recursion_depth);
+        
+        Ray reflected_ray;
+        reflected_ray.endpoint = intersection_point;
+        reflected_ray.direction = ray.direction - same_side_normal * 2 * dot(ray.direction, same_side_normal);
+        
+        reflection_color = shader->world.Cast_Ray(reflected_ray, recursion_depth);
     }
 
     Enforce_Refractance_Ratio(reflectance_ratio);
@@ -51,4 +54,3 @@ Enforce_Refractance_Ratio(double& reflectance_ratio) const
     if(world.disable_fresnel_reflection) reflectance_ratio=0;
     else if(world.disable_fresnel_refraction) reflectance_ratio=1;
 }
-
