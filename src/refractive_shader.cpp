@@ -15,16 +15,65 @@ Shade_Surface(const Ray& ray, const vec3& intersection_point,
     double reflectance_ratio=-1;
     if(!world.disable_fresnel_refraction)
     {
-        //TODO (Test 27+): Compute the refraction_color:
+        // TODO (Test 27+): Compute the refraction_color:
+        vec3 newNormal;
+        double n_r, n_i;
+        if(is_exiting){
+            // i outside, r inside
+            n_r = REFRACTIVE_INDICES::AIR;
+            n_i = refractive_index;
+            newNormal = -same_side_normal;
+        }
+        else{
+            n_r = refractive_index;
+            n_i = REFRACTIVE_INDICES::AIR;
+            newNormal = same_side_normal;
+        }
+        double cosI = dot(ray.direction, newNormal);
+        
+        double check_val = 1 - ((n_i * n_i) / (n_r * n_r)) * (1 - (cosI * cosI));
+        
+        double cosR = sqrt(check_val);
+        
+        // NEED TO COMPARE TO cosR (!!!)
+        
         // - Check if it is total internal reflection. 
-        //      If so update the reflectance_ratio for total internal refraction
-        //
-        //      else, follow the instructions below
-        //
-        //        (Test 28+): Update the reflectance_ratio 
-        //
-        //        (Test 27+): Cast the refraction ray and compute the refraction_color
-        //
+        
+        if(check_val <= 0){
+            // If so update the reflectance_ratio for total internal refraction
+            reflectance_ratio = 1;
+        }
+        else{
+            //      else, follow the instructions below
+            //      (Test 28+): Update the reflectance_ratio 
+        
+            double R_parallel, R_perpendicular;
+            
+            if(cosI < 0){
+                cosI = -cosI;
+            }
+            if(cosR < 0){
+                cosR = -cosR;
+            }
+            
+            R_parallel = (n_r * cosI - n_i * cosR)/(n_r * cosI + n_i * cosR);
+            R_parallel = R_parallel * R_parallel;
+            
+            R_perpendicular = (n_i * cosI - n_r * cosR)/(n_i * cosI + n_r * cosR);
+            R_perpendicular = R_perpendicular * R_perpendicular;
+            
+            reflectance_ratio = (R_parallel + R_perpendicular) / 2;
+            
+            //      (Test 27+): Cast the refraction ray and compute the refraction_color
+            vec3 T = (n_i/n_r) * (ray.direction - dot(newNormal, ray.direction) * newNormal) - cosR * newNormal;
+            Ray refractive_ray;
+            refractive_ray.endpoint = intersection_point;
+            refractive_ray.direction = T;
+            refraction_color = shader->world.Cast_Ray(refractive_ray, recursion_depth);
+            
+        }
+
+
     }
 
     if(!world.disable_fresnel_reflection){

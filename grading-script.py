@@ -113,13 +113,17 @@ for line in gs.readlines():
               d=diff_parse.match(results_file.readline())
               results_file.close()
               os.remove(dir+'/'+token+'.txt')
+              if d: d=float(d.groups()[0])
             except IOError:
-              print 'Test failed'
-            if d: d=float(d.groups()[0])
+              # print 'Test failed'
+              d="CRASH"
             hashed_tests[file]=d
 
     d=hashed_tests[file]
-    if d=="TIMEOUT":
+    if d=="CRASH":
+        print("FAIL: (%s) Program crashed."%file)
+        points=0
+    elif d=="TIMEOUT":
         print("FAIL: (%s) Test timed out."%file)
         points=0
     elif d==None:
