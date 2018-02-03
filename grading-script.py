@@ -105,7 +105,7 @@ for line in gs.readlines():
         shutil.copyfile(test_dir+'/'+file+".txt", dir+"/file.txt")
         shutil.copyfile(test_dir+'/'+file+".png", dir+"/file.png")
         if not run_command_with_timeout(grade_cmd, timeout):
-            hashed_tests[file]=("TIMEOUT",None)
+            hashed_tests[file]="TIMEOUT"
         else:
             d=False
             try:
