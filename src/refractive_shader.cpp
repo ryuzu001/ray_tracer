@@ -39,7 +39,7 @@ Shade_Surface(const Ray& ray, const vec3& intersection_point,
         
         // - Check if it is total internal reflection. 
         
-        if(check_val <= 0){
+        if(check_val < 0){
             // If so update the reflectance_ratio for total internal refraction
             reflectance_ratio = 1;
         }
@@ -56,11 +56,11 @@ Shade_Surface(const Ray& ray, const vec3& intersection_point,
                 cosR = -cosR;
             }
             
-            R_parallel = (n_r * cosI - n_i * cosR)/(n_r * cosI + n_i * cosR);
-            R_parallel = R_parallel * R_parallel;
+            R_parallel = pow((n_r * cosI - n_i * cosR)/(n_r * cosI + n_i * cosR), 2);
+            // R_parallel = R_parallel * R_parallel;
             
-            R_perpendicular = (n_i * cosI - n_r * cosR)/(n_i * cosI + n_r * cosR);
-            R_perpendicular = R_perpendicular * R_perpendicular;
+            R_perpendicular = pow((n_i * cosI - n_r * cosR)/(n_i * cosI + n_r * cosR), 2);
+            // R_perpendicular = R_perpendicular * R_perpendicular;
             
             reflectance_ratio = (R_parallel + R_perpendicular) / 2;
             
